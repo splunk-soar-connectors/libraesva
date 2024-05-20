@@ -9,7 +9,7 @@
     "product_name": "libraesva",
     "python_version": "3",
     "product_version_regex": ".*",
-    "publisher": "Splunk",
+    "publisher": "Splunk Community",
     "contributors": [
         {
             "name": "Bartosz Debek"
@@ -20,7 +20,7 @@
     "utctime_updated": "2024-02-09T10:37:50.484226Z",
     "package_name": "phantom_libraesva",
     "main_module": "libraesva_connector.py",
-    "min_phantom_version": "6.0.2.127725",
+    "min_phantom_version": "6.1.1",
     "app_wizard_version": "1.0.0",
     "configuration": {
         "base_url": {
