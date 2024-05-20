@@ -1,7 +1,7 @@
 {
     "appid": "0d2f624d-ecd6-4845-926f-f34dfeaf585e",
     "name": "libraesva",
-    "description": "App for fetching data from Libraesva's Email Security Gateway",
+    "description": "This app implements integration with Libraesva Email Security Gateway",
     "type": "email",
     "product_vendor": "Libraesva",
     "logo": "libraesva.png",
