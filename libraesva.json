@@ -247,11 +247,11 @@
                 },
                 {
                     "data_path": "action_result.summary.total_objects",
-                    "data_type": "string"
+                    "data_type": "numeric"
                 },
                 {
                     "data_path": "action_result.summary.total_objects_successful",
-                    "data_type": "string"
+                    "data_type": "numeric"
                 },
                 {
                     "data_path": "action_result.message",
@@ -325,11 +325,11 @@
                 },
                 {
                     "data_path": "action_result.summary.total_objects",
-                    "data_type": "string"
+                    "data_type": "numeric"
                 },
                 {
                     "data_path": "action_result.summary.total_objects_successful",
-                    "data_type": "string"
+                    "data_type": "numeric"
                 },
                 {
                     "data_path": "action_result.message",
