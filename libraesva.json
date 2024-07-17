@@ -122,23 +122,59 @@
                     ]
                 },
                 {
+                    "data_path": "action_result.parameter.date_range",
+                    "data_type": "string",
+                    "contains": [
+                        "date_range"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.email",
+                    "data_type": "string",
+                    "contains": [
+                        "email"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.groups",
+                    "data_type": "string",
+                    "contains": [
+                        "groups"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.groups_value",
+                    "data_type": "string",
+                    "contains": [
+                        "groups_value"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.page",
+                    "data_type": "string",
+                    "contains": [
+                        "page"
+                    ]
+                },
+                {
                     "data_path": "action_result.data",
                     "data_type": "string"
                 },
                 {
-                    "data_path": "action_result.message",
+                    "data_path": "action_result.data.*.deliveryResult",
                     "data_type": "string"
                 },
                 {
-                    "data_path": "action_result.summary.status",
+                    "data_path": "action_result.data.*.hasAttachments",
                     "data_type": "string"
                 },
                 {
-                    "data_path": "action_result.summary.num_messages",
-                    "data_type": "string",
-                    "example_values": [
-                        "10"
-                    ]
+                    "data_path": "action_result.data.*.headerFrom",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.hostname",
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.id",
@@ -147,16 +183,12 @@
                     "column_order": 0
                 },
                 {
-                    "data_path": "action_result.data.*.sender",
-                    "data_type": "string",
-                    "column_name": "Sender",
-                    "column_order": 1
+                    "data_path": "action_result.data.*.messageId",
+                    "data_type": "string"
                 },
                 {
-                    "data_path": "action_result.data.*.senderIp",
-                    "data_type": "string",
-                    "column_name": "Sender IP",
-                    "column_order": 2
+                    "data_path": "action_result.data.*.quarantined",
+                    "data_type": "boolean"
                 },
                 {
                     "data_path": "action_result.data.*.receivedOn",
@@ -171,15 +203,23 @@
                     "column_order": 4
                 },
                 {
-                    "data_path": "action_result.data.*.messageId",
+                    "data_path": "action_result.data.*.result",
                     "data_type": "string"
                 },
                 {
-                    "data_path": "action_result.data.*.headerFrom",
-                    "data_type": "string"
+                    "data_path": "action_result.data.*.sender",
+                    "data_type": "string",
+                    "column_name": "Sender",
+                    "column_order": 1
                 },
                 {
-                    "data_path": "action_result.data.*.subject",
+                    "data_path": "action_result.data.*.senderIp",
+                    "data_type": "string",
+                    "column_name": "Sender IP",
+                    "column_order": 2
+                },
+                {
+                    "data_path": "action_result.data.*.sentOn",
                     "data_type": "string"
                 },
                 {
@@ -187,66 +227,26 @@
                     "data_type": "numeric"
                 },
                 {
-                    "data_path": "action_result.data.*.result",
+                    "data_path": "action_result.data.*.subject",
                     "data_type": "string"
-                },
-                {
-                    "data_path": "action_result.data.*.quarantined",
-                    "data_type": "boolean"
-                },
-                {
-                    "data_path": "action_result.data.*.deliveryResult",
-                    "data_type": "string"
-                },
-                {
-                    "data_path": "action_result.data.*.hasAttachments",
-                    "data_type": "string"
-                },
-                {
-                    "data_path": "action_result.data.*.hostname",
-                    "data_type": "string"
-                },
-                {
-                    "data_path": "action_result.data.*.sentOn",
-                    "data_type": "string"
-                },
-                {
-                    "data_path": "action_result.parameter.groups_value",
-                    "data_type": "string",
-                    "contains": [
-                        "groups_value"
-                    ]
-                },
-                {
-                    "data_path": "action_result.parameter.groups",
-                    "data_type": "string",
-                    "contains": [
-                        "groups"
-                    ]
-                },
-                {
-                    "data_path": "action_result.parameter.email",
-                    "data_type": "string",
-                    "contains": [
-                        "email"
-                    ]
-                },
-                {
-                    "data_path": "action_result.parameter.date_range",
-                    "data_type": "string",
-                    "contains": [
-                        "date_range"
-                    ]
-                },
-                {
-                    "data_path": "action_result.parameter.page",
-                    "data_type": "string",
-                    "contains": [
-                        "page"
-                    ]
                 },
                 {
                     "data_path": "action_result.summary",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.summary.num_messages",
+                    "data_type": "string",
+                    "example_values": [
+                        "10"
+                    ]
+                },
+                {
+                    "data_path": "action_result.summary.status",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.summary.total_objects",
                     "data_type": "string"
                 },
                 {
@@ -254,7 +254,7 @@
                     "data_type": "string"
                 },
                 {
-                    "data_path": "action_result.summary.total_objects",
+                    "data_path": "action_result.message",
                     "data_type": "string"
                 }
             ],
@@ -304,19 +304,7 @@
                     "column_order": 0
                 },
                 {
-                    "data_path": "action_result.data",
-                    "data_type": "string"
-                },
-                {
-                    "data_path": "action_result.message",
-                    "data_type": "string"
-                },
-                {
                     "data_path": "action_result.parameter.from",
-                    "data_type": "string"
-                },
-                {
-                    "data_path": "action_result.parameter.to",
                     "data_type": "string"
                 },
                 {
@@ -324,7 +312,19 @@
                     "data_type": "string"
                 },
                 {
+                    "data_path": "action_result.parameter.to",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data",
+                    "data_type": "string"
+                },
+                {
                     "data_path": "action_result.summary",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.summary.total_objects",
                     "data_type": "string"
                 },
                 {
@@ -332,7 +332,7 @@
                     "data_type": "string"
                 },
                 {
-                    "data_path": "action_result.summary.total_objects",
+                    "data_path": "action_result.message",
                     "data_type": "string"
                 }
             ],
