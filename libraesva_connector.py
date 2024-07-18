@@ -533,7 +533,7 @@ class LibraesvaConnector(BaseConnector):
 
         from_param = param.get('from')
         to_param = param.get('to')
-        only_envelope = param.get('only_envelope')
+        only_envelope = param.get('only_envelope', False)
 
         data = {
             'from': from_param,

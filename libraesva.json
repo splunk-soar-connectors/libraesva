@@ -43,7 +43,7 @@
         },
         "admin_user": {
             "data_type": "string",
-            "description": "Libraesva admin user for impersonification. (X-Switch-User)",
+            "description": "Libraesva admin user for impersonification (X-Switch-User)",
             "required": true,
             "order": 3
         }
@@ -63,7 +63,7 @@
             "action": "search email",
             "identifier": "search_email",
             "description": "Search email based on provided query string",
-            "type": "contain",
+            "type": "investigate",
             "read_only": true,
             "parameters": {
                 "page": {
@@ -270,7 +270,7 @@
             "action": "blocklist resource",
             "identifier": "blocklist_resource",
             "description": "Blocklist specified resource",
-            "type": "contain",
+            "type": "generic",
             "read_only": false,
             "parameters": {
                 "from": {
