@@ -627,8 +627,6 @@ class LibraesvaConnector(BaseConnector):
 
         if action_id == 'test_connectivity':
             ret_val = self._handle_test_connectivity(param)
-        if action_id == 'generate_token':
-            ret_val = self._handle_generate_token(param)
         if action_id == 'search_email':
             ret_val = self._handle_search_email(param)
         if action_id == 'blocklist_resource':
