@@ -1,2 +1,2 @@
 **Unreleased**
-* Initial Release
+* Initial release
