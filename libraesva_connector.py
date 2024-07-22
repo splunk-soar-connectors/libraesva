@@ -18,7 +18,6 @@ from __future__ import print_function, unicode_literals
 
 import json
 import pathlib
-import sys
 import urllib.parse as urlparse
 
 import encryption_helper
@@ -659,6 +658,7 @@ class LibraesvaConnector(BaseConnector):
 
 def main():
     import argparse
+    import sys
 
     argparser = argparse.ArgumentParser()
 
