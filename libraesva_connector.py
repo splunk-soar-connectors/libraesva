@@ -1,6 +1,6 @@
 # File: libraesva_connector.py
 
-# Copyright (c) Splunk, 2024
+# Copyright (c) Splunk, 2024-2025
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,13 +14,13 @@
 # and limitations under the License.
 
 # Python 3 Compatibility imports
-from __future__ import print_function, unicode_literals
 
 import json
 import pathlib
 import urllib.parse as urlparse
 
 import encryption_helper
+
 # Phantom App imports
 import phantom.app as phantom
 import requests
@@ -32,7 +32,7 @@ from libraesva_consts import *
 
 
 def _is_valid_asset_id(asset_id):
-    """ This function validates an asset id.
+    """This function validates an asset id.
     Must be an alphanumeric string of less than 128 characters.
 
     :param asset_id: asset_id
@@ -48,7 +48,7 @@ def _is_valid_asset_id(asset_id):
 
 
 def _get_file_path(asset_id, is_state_file=True):
-    """ This function gets the path of the auth status file of an asset id.
+    """This function gets the path of the auth status file of an asset id.
 
     :param asset_id: asset_id
     :param app_connector: Object of app_connector class
@@ -57,9 +57,9 @@ def _get_file_path(asset_id, is_state_file=True):
     """
     current_file_path = pathlib.Path(__file__).resolve()
     if is_state_file:
-        input_file = f'{asset_id}_state.json'
+        input_file = f"{asset_id}_state.json"
     else:
-        input_file = f'{asset_id}_oauth_task.out'
+        input_file = f"{asset_id}_oauth_task.out"
     output_file_path = current_file_path.with_name(input_file)
     return output_file_path
 
@@ -100,7 +100,7 @@ def _encrypt_state(state, salt):
 
 
 def _load_app_state(asset_id, app_connector=None):
-    """ This function is used to load the current state file.
+    """This function is used to load the current state file.
 
     :param asset_id: asset_id
     :param app_connector: Object of app_connector class
@@ -110,21 +110,21 @@ def _load_app_state(asset_id, app_connector=None):
     asset_id = str(asset_id)
     if not _is_valid_asset_id(asset_id):
         if app_connector:
-            app_connector.debug_print('In _load_app_state: Invalid asset_id')
+            app_connector.debug_print("In _load_app_state: Invalid asset_id")
         return {}
 
     state_file_path = _get_file_path(asset_id)
 
     state = {}
     try:
-        with open(state_file_path, 'r') as state_file:
+        with open(state_file_path) as state_file:
             state = json.load(state_file)
     except Exception as e:
         if app_connector:
-            app_connector.error_print(f'In _load_app_state: Exception: {str(e)}')
+            app_connector.error_print(f"In _load_app_state: Exception: {e!s}")
 
     if app_connector:
-        app_connector.debug_print('Loaded state: ', state)
+        app_connector.debug_print("Loaded state: ", state)
 
     try:
         state = _decrypt_state(state, asset_id)
@@ -137,7 +137,7 @@ def _load_app_state(asset_id, app_connector=None):
 
 
 def _save_app_state(state, asset_id, app_connector):
-    """ This function is used to save current state in file.
+    """This function is used to save current state in file.
 
     :param state: Dictionary which contains data to write in state file
     :param asset_id: asset_id
@@ -147,7 +147,7 @@ def _save_app_state(state, asset_id, app_connector):
     asset_id = str(asset_id)
     if not _is_valid_asset_id(asset_id):
         if app_connector:
-            app_connector.debug_print('In _save_app_state: Invalid asset_id')
+            app_connector.debug_print("In _save_app_state: Invalid asset_id")
         return {}
 
     state_file_path = _get_file_path(asset_id)
@@ -160,30 +160,27 @@ def _save_app_state(state, asset_id, app_connector):
         return phantom.APP_ERROR
 
     if app_connector:
-        app_connector.debug_print('Saving state: ', state)
+        app_connector.debug_print("Saving state: ", state)
 
     try:
-        with open(state_file_path, 'w+') as state_file:
+        with open(state_file_path, "w+") as state_file:
             json.dump(state, state_file)
     except Exception as e:
         if app_connector:
-            app_connector.error_print(f'Unable to save state file: {str(e)}')
+            app_connector.error_print(f"Unable to save state file: {e!s}")
 
     return phantom.APP_SUCCESS
 
 
 class RetVal(tuple):
-
     def __new__(cls, val1, val2=None):
         return tuple.__new__(RetVal, (val1, val2))
 
 
 class LibraesvaConnector(BaseConnector):
-
     def __init__(self):
-
         # Call the BaseConnectors init first
-        super(LibraesvaConnector, self).__init__()
+        super().__init__()
 
         self._state = None
 
@@ -204,9 +201,7 @@ class LibraesvaConnector(BaseConnector):
         state = super().load_state()
         if not isinstance(state, dict):
             self.debug_print("Reseting the state file with the default format")
-            state = {
-                "app_version": self.get_app_json().get('app_version')
-            }
+            state = {"app_version": self.get_app_json().get("app_version")}
             return state
         try:
             state = _decrypt_state(state, self.get_asset_id())
@@ -214,9 +209,7 @@ class LibraesvaConnector(BaseConnector):
             error_message = self._get_error_message_from_exception(e)
             self.error_print("{}: {}".format("Error decrypting the state file: ", error_message))
             self.debug_print("Reseting the state file with the default format")
-            state = {
-                "app_version": self.get_app_json().get('app_version')
-            }
+            state = {"app_version": self.get_app_json().get("app_version")}
 
         return state
 
@@ -259,9 +252,9 @@ class LibraesvaConnector(BaseConnector):
             self.error_print("Exception occurred while getting error code and message")
 
         if not error_code:
-            error_text = "Error Message: {}".format(error_message)
+            error_text = f"Error Message: {error_message}"
         else:
-            error_text = "Error Code: {}. Error Message: {}".format(error_code, error_message)
+            error_text = f"Error Code: {error_code}. Error Message: {error_message}"
 
         return error_text
 
@@ -269,11 +262,7 @@ class LibraesvaConnector(BaseConnector):
         if response.status_code == 200:
             return RetVal(phantom.APP_SUCCESS, {})
 
-        return RetVal(
-            action_result.set_status(
-                phantom.APP_ERROR, "Empty response and no information in the header"
-            ), None
-        )
+        return RetVal(action_result.set_status(phantom.APP_ERROR, "Empty response and no information in the header"), None)
 
     def _process_html_response(self, response, action_result):
         # An html response, treat it like an error
@@ -282,15 +271,15 @@ class LibraesvaConnector(BaseConnector):
         try:
             soup = BeautifulSoup(response.text, "html.parser")
             error_text = soup.text
-            split_lines = error_text.split('\n')
+            split_lines = error_text.split("\n")
             split_lines = [x.strip() for x in split_lines if x.strip()]
-            error_text = '\n'.join(split_lines)
+            error_text = "\n".join(split_lines)
         except:
             error_text = "Cannot parse error details"
 
-        message = "Status Code: {0}. Data from server:\n{1}\n".format(status_code, error_text)
+        message = f"Status Code: {status_code}. Data from server:\n{error_text}\n"
 
-        message = message.replace(u'{', '{{').replace(u'}', '}}')
+        message = message.replace("{", "{{").replace("}", "}}")
         return RetVal(action_result.set_status(phantom.APP_ERROR, message), None)
 
     def _process_json_response(self, r, action_result):
@@ -298,42 +287,35 @@ class LibraesvaConnector(BaseConnector):
         try:
             resp_json = r.json()
         except Exception as e:
-            return RetVal(
-                action_result.set_status(
-                    phantom.APP_ERROR, "Unable to parse JSON response. Error: {0}".format(str(e))
-                ), None
-            )
+            return RetVal(action_result.set_status(phantom.APP_ERROR, f"Unable to parse JSON response. Error: {e!s}"), None)
 
         # Please specify the status codes here
         if 200 <= r.status_code < 399:
             return RetVal(phantom.APP_SUCCESS, resp_json)
 
         # You should process the error returned in the json
-        message = "Error from server. Status Code: {0} Data from server: {1}".format(
-            r.status_code,
-            r.text.replace(u'{', '{{').replace(u'}', '}}')
-        )
+        message = "Error from server. Status Code: {} Data from server: {}".format(r.status_code, r.text.replace("{", "{{").replace("}", "}}"))
 
         return RetVal(action_result.set_status(phantom.APP_ERROR, message), None)
 
     def _process_response(self, r, action_result):
         # store the r_text in debug data, it will get dumped in the logs if the action fails
-        if hasattr(action_result, 'add_debug_data'):
-            action_result.add_debug_data({'r_status_code': r.status_code})
-            action_result.add_debug_data({'r_text': r.text})
-            action_result.add_debug_data({'r_headers': r.headers})
+        if hasattr(action_result, "add_debug_data"):
+            action_result.add_debug_data({"r_status_code": r.status_code})
+            action_result.add_debug_data({"r_text": r.text})
+            action_result.add_debug_data({"r_headers": r.headers})
 
         # Process each 'Content-Type' of response separately
 
         # Process a json response
-        if 'json' in r.headers.get('Content-Type', ''):
+        if "json" in r.headers.get("Content-Type", ""):
             return self._process_json_response(r, action_result)
 
         # Process an HTML response, Do this no matter what the api talks.
         # There is a high chance of a PROXY in between phantom and the rest of
         # world, in case of errors, PROXY's return HTML, this function parses
         # the error and adds it to the action_result.
-        if 'html' in r.headers.get('Content-Type', ''):
+        if "html" in r.headers.get("Content-Type", ""):
             return self._process_html_response(r, action_result)
 
         # it's not content-type that is to be parsed, handle an empty response
@@ -341,15 +323,14 @@ class LibraesvaConnector(BaseConnector):
             return self._process_empty_response(r, action_result)
 
         # everything else is actually an error at this point
-        message = "Can't process response from server. Status Code: {0} Data from server: {1}".format(
-            r.status_code,
-            r.text.replace('{', '{{').replace('}', '}}')
+        message = "Can't process response from server. Status Code: {} Data from server: {}".format(
+            r.status_code, r.text.replace("{", "{{").replace("}", "}}")
         )
 
         return RetVal(action_result.set_status(phantom.APP_ERROR, message), None)
 
     def _make_rest_call(self, endpoint, action_result, verify=True, headers=None, params=None, data=None, json=None, method="get"):
-        """ Function that makes the REST call to the app.
+        """Function that makes the REST call to the app.
 
         :param endpoint: REST endpoint that needs to appended to the service address
         :param action_result: object of ActionResult class
@@ -379,7 +360,7 @@ class LibraesvaConnector(BaseConnector):
         return self._process_response(resp_json, action_result)
 
     def _make_rest_call_helper(self, action_result, endpoint, verify=True, headers=None, params=None, data=None, json=None, method="get"):
-        """ Function that helps setting REST call to the app.
+        """Function that helps setting REST call to the app.
 
         :param endpoint: REST endpoint that needs to appended to the service address
         :param action_result: object of ActionResult class
@@ -403,23 +384,19 @@ class LibraesvaConnector(BaseConnector):
 
             if phantom.is_fail(ret_val):
                 return RetVal(action_result.get_status(), None)
-        headers.update({
-                'X-ESG-Auth-Token': self._access_token,
-                'X-Switch-User': self._admin_user,
-                'Content-Type': 'application/json'
-            })
+        headers.update({"X-ESG-Auth-Token": self._access_token, "X-Switch-User": self._admin_user, "Content-Type": "application/json"})
         ret_val, resp_json = self._make_rest_call(url, action_result, verify, headers, params, data, json, method)
 
         # If token is expired, generate a new token
         message = action_result.get_message()
         self.debug_print(f"message: {message}")
-        if message and ('token' in message and 'expired' in message):
+        if message and ("token" in message and "expired" in message):
             self.save_progress("Token is invalid/expired. Hence, generating a new token.")
             ret_val = self._get_token(action_result)
             if phantom.is_fail(ret_val):
                 return RetVal(ret_val, None)
 
-            headers.update({'X-ESG-Auth-Token': self._access_token})
+            headers.update({"X-ESG-Auth-Token": self._access_token})
 
             ret_val, resp_json = self._make_rest_call(url, action_result, verify, headers, params, data, json, method)
 
@@ -429,7 +406,6 @@ class LibraesvaConnector(BaseConnector):
         return RetVal(phantom.APP_SUCCESS, resp_json)
 
     def _handle_generate_token(self, param):
-
         self.save_progress(f"In action handler for: {self.get_action_identifier()}")
         action_result = self.add_action_result(ActionResult(dict(param)))
         ret_val = self._get_token(action_result)
@@ -454,16 +430,12 @@ class LibraesvaConnector(BaseConnector):
         #     if phantom.is_fail(ret_val):
         #         return action_result.get_status()
 
-        params = {
-            "page": 1
-        }
+        params = {"page": 1}
         endpoint = LIBRAESVA_MESSAGE_ENDPOINT
 
         self.save_progress("Connecting to endpoint")
         # make rest call
-        ret_val, response = self._make_rest_call_helper(
-            action_result, endpoint=endpoint, params=params, headers=None
-        )
+        ret_val, response = self._make_rest_call_helper(action_result, endpoint=endpoint, params=params, headers=None)
 
         if phantom.is_fail(ret_val):
             # the call to the 3rd party device or service failed, action result should contain all the error details
@@ -479,7 +451,6 @@ class LibraesvaConnector(BaseConnector):
         # return action_result.set_status(phantom.APP_ERROR, "Action not yet implemented")
 
     def _handle_search_email(self, param):
-
         self.save_progress(f"In action handler for: {self.get_action_identifier()}")
         action_result = self.add_action_result(ActionResult(dict(param)))
 
@@ -489,25 +460,25 @@ class LibraesvaConnector(BaseConnector):
         #     if phantom.is_fail(ret_val):
         #         return action_result.get_status()
 
-        page = param.get('page', '')
-        groups = param.get('groups', '')
-        date_range = param.get('date_range', '')
-        email = param.get('email', '')
-        groups_value = param.get('groups_value', '')
+        page = param.get("page", "")
+        groups = param.get("groups", "")
+        date_range = param.get("date_range", "")
+        email = param.get("email", "")
+        groups_value = param.get("groups_value", "")
 
         endpoint = LIBRAESVA_MESSAGE_ENDPOINT
         params = {}
 
         if page:
-            params['page'] = page
+            params["page"] = page
         if groups:
-            params['groups[0][queries][0][field]'] = groups
+            params["groups[0][queries][0][field]"] = groups
         if date_range:
-            params['date_range'] = date_range
+            params["date_range"] = date_range
         if email:
-            params['email'] = email
+            params["email"] = email
         if groups_value:
-            params['groups[0][queries][0][value]'] = groups_value
+            params["groups[0][queries][0][value]"] = groups_value
 
         ret_val = self._handle_pagination(action_result, endpoint=endpoint, params=params, headers=None)
 
@@ -518,56 +489,51 @@ class LibraesvaConnector(BaseConnector):
 
         summary = action_result.update_summary({})
         resp_data = action_result.get_data()
-        if resp_data and resp_data[action_result.get_data_size() - 1] == 'Empty response':
-            summary['num_messages'] = (action_result.get_data_size()) - 1
+        if resp_data and resp_data[action_result.get_data_size() - 1] == "Empty response":
+            summary["num_messages"] = (action_result.get_data_size()) - 1
         else:
-            summary['num_messages'] = action_result.get_data_size()
+            summary["num_messages"] = action_result.get_data_size()
 
         self.save_progress(f"Completed action handler for: {self.get_action_identifier()}")
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _handle_blocklist_resource(self, param):
-
         self.save_progress(f"In action handler for: {self.get_action_identifier()}")
         action_result = self.add_action_result(ActionResult(dict(param)))
 
-        from_param = param.get('from')
-        to_param = param.get('to')
-        only_envelope = param.get('only_envelope', False)
+        from_param = param.get("from")
+        to_param = param.get("to")
+        only_envelope = param.get("only_envelope", False)
 
-        data = {
-            'from': from_param,
-            'to': to_param,
-            'onlyEnvelope': only_envelope
-        }
+        data = {"from": from_param, "to": to_param, "onlyEnvelope": only_envelope}
 
         endpoint = LIBRAESVA_BLOCK_RESOURCE_ENDPOINT
 
-        ret_val, _ = self._make_rest_call_helper(action_result, endpoint, json=data, method='post')
+        ret_val, _ = self._make_rest_call_helper(action_result, endpoint, json=data, method="post")
 
         if phantom.is_fail(ret_val):
             return ret_val
 
         summary = action_result.update_summary({})
-        summary['status'] = "Successfully added element to blocklist"
+        summary["status"] = "Successfully added element to blocklist"
 
         # An empty response indicates success. No response body is returned.
         self.save_progress(f"Completed action handler for: {self.get_action_identifier()}")
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _get_token(self, action_result):
-        """ This function is used to get a token via REST Call.
+        """This function is used to get a token via REST Call.
 
         :param action_result: Object of action result
         :return: status(phantom.APP_SUCCESS/phantom.APP_ERROR)
         """
 
         data = {
-            'username': self._username,
-            'password': self._password,
+            "username": self._username,
+            "password": self._password,
         }
         req_url = self._base_url + LIBRAESVA_LOGIN_ENDPOINT
-        ret_val, resp_json = self._make_rest_call(req_url, action_result, headers=None, json=data, method='post')
+        ret_val, resp_json = self._make_rest_call(req_url, action_result, headers=None, json=data, method="post")
 
         if phantom.is_fail(ret_val):
             self.save_progress("Error occured trying to obtain authorization token")
@@ -575,7 +541,7 @@ class LibraesvaConnector(BaseConnector):
 
         self.save_progress("Token obtained")
 
-        self._access_token = resp_json.get('token', None)
+        self._access_token = resp_json.get("token", None)
 
         return phantom.APP_SUCCESS
 
@@ -590,25 +556,25 @@ class LibraesvaConnector(BaseConnector):
         """
         while True:
             # make rest call
-            ret_val, response = self._make_rest_call_helper(action_result, endpoint, headers=headers, params=params, method='get')
+            ret_val, response = self._make_rest_call_helper(action_result, endpoint, headers=headers, params=params, method="get")
 
             if phantom.is_fail(ret_val):
                 return None
 
             if "_embedded" in response:
-                for email in response.get('_embedded', []).get('item'):
+                for email in response.get("_embedded", []).get("item"):
                     action_result.add_data(email)
-                if len(response.get('_embedded', []).get('item')) > 0 and response.get('_embedded').get('item') == {}:
-                    action_result.add_data('Empty response')
+                if len(response.get("_embedded", []).get("item")) > 0 and response.get("_embedded").get("item") == {}:
+                    action_result.add_data("Empty response")
             else:
                 action_result.add_data(response)
 
-            if response.get('_links').get('next'):
-                next_url = response.get('_links').get('next').get('href')
+            if response.get("_links").get("next"):
+                next_url = response.get("_links").get("next").get("href")
                 parsed_url = urlparse.urlparse(next_url)
-                self.debug_print(f'PARSED URL {parsed_url}')
+                self.debug_print(f"PARSED URL {parsed_url}")
                 try:
-                    params['page'] += 1
+                    params["page"] += 1
                 except Exception:
                     self.debug_print("Error occurred while extracting params from _links.next")
                     break
@@ -625,11 +591,11 @@ class LibraesvaConnector(BaseConnector):
 
         self.debug_print("action_id", self.get_action_identifier())
 
-        if action_id == 'test_connectivity':
+        if action_id == "test_connectivity":
             ret_val = self._handle_test_connectivity(param)
-        if action_id == 'search_email':
+        if action_id == "search_email":
             ret_val = self._handle_search_email(param)
-        if action_id == 'blocklist_resource':
+        if action_id == "blocklist_resource":
             ret_val == self._handle_blocklist_resource(param)
 
         return ret_val
@@ -643,10 +609,10 @@ class LibraesvaConnector(BaseConnector):
         config = self.get_config()
         self._asset_id = self.get_asset_id()
 
-        self._base_url = config.get('base_url')
-        self._username = config.get('username')
-        self._password = config.get('password')
-        self._admin_user = config.get('admin_user')
+        self._base_url = config.get("base_url")
+        self._username = config.get("username")
+        self._password = config.get("password")
+        self._admin_user = config.get("admin_user")
 
         return phantom.APP_SUCCESS
 
@@ -662,9 +628,9 @@ def main():
 
     argparser = argparse.ArgumentParser()
 
-    argparser.add_argument('input_test_json', help='Input Test JSON file')
-    argparser.add_argument('-u', '--username', help='username', required=False)
-    argparser.add_argument('-p', '--password', help='password', required=False)
+    argparser.add_argument("input_test_json", help="Input Test JSON file")
+    argparser.add_argument("-u", "--username", help="username", required=False)
+    argparser.add_argument("-p", "--password", help="password", required=False)
     argparser.add_argument(
         "-v",
         "--verify",
@@ -682,31 +648,31 @@ def main():
     verify = args.verify
 
     if username is not None and password is None:
-
         # User specified a username but not a password, so ask
         import getpass
+
         password = getpass.getpass("Password: ")
 
     if username and password:
         try:
-            login_url = LibraesvaConnector._get_phantom_base_url() + '/login'
+            login_url = LibraesvaConnector._get_phantom_base_url() + "/login"
 
             print("Accessing the Login page")
             r = requests.get(login_url, verify=verify)
-            csrftoken = r.cookies['csrftoken']
+            csrftoken = r.cookies["csrftoken"]
 
             data = dict()
-            data['username'] = username
-            data['password'] = password
-            data['csrfmiddlewaretoken'] = csrftoken
+            data["username"] = username
+            data["password"] = password
+            data["csrfmiddlewaretoken"] = csrftoken
 
             headers = dict()
-            headers['Cookie'] = 'csrftoken=' + csrftoken
-            headers['Referer'] = login_url
+            headers["Cookie"] = "csrftoken=" + csrftoken
+            headers["Referer"] = login_url
 
             print("Logging into Platform to get the session id")
             r2 = requests.post(login_url, verify=verify, data=data, headers=headers)
-            session_id = r2.cookies['sessionid']
+            session_id = r2.cookies["sessionid"]
         except Exception as e:
             print("Unable to get session id from the platform. Error: " + str(e))
             sys.exit(1)
@@ -720,8 +686,8 @@ def main():
         connector.print_progress_message = True
 
         if session_id is not None:
-            in_json['user_session_token'] = session_id
-            connector._set_csrf_info(csrftoken, headers['Referer'])
+            in_json["user_session_token"] = session_id
+            connector._set_csrf_info(csrftoken, headers["Referer"])
 
         ret_val = connector._handle_action(json.dumps(in_json), None)
         print(json.dumps(json.loads(ret_val), indent=4))
@@ -729,5 +695,5 @@ def main():
     sys.exit(0)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
