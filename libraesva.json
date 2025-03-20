@@ -15,7 +15,7 @@
             "name": "Bartosz Debek"
         }
     ],
-    "license": "Copyright (c) Splunk, 2024",
+    "license": "Copyright (c) Splunk, 2024-2025",
     "app_version": "1.0.1",
     "utctime_updated": "2024-02-09T10:37:50.484226Z",
     "package_name": "phantom_libraesva",
